@@ -80,10 +80,13 @@ app.get("/admin/employers", adminAuth, async(req,res)=>{
   res.json(await Employer.find());
 });
 app.get("/admin/resume/:file", adminAuth, (req,res)=>{
-  res.sendFile(path.join(__dirname,"uploads",req.params.file));
+  const filePath = path.join(__dirname, "uploads", req.params.file);
+  res.download(filePath);
 });
 
+
 app.listen(process.env.PORT || 5000);
+
 
 
 
