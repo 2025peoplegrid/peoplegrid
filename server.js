@@ -1,6 +1,10 @@
 const ADMIN_USER = "admin";
 const ADMIN_PASS = "peoplegrid123";
 
+const path = require("path");
+app.use("/uploads", express.static("uploads"));
+
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -72,5 +76,10 @@ app.get("/admin/workers", adminAuth, async(req,res)=>{
 app.get("/admin/employers", adminAuth, async(req,res)=>{
   res.json(await Employer.find());
 });
+app.get("/admin/resume/:file", adminAuth, (req,res)=>{
+  res.sendFile(path.join(__dirname,"uploads",req.params.file));
+});
+
 app.listen(process.env.PORT || 5000);
+
 
