@@ -1,3 +1,6 @@
+const ADMIN_USER = "admin";
+const ADMIN_PASS = "peoplegrid123";
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -6,6 +9,13 @@ const multer = require("multer");
 const app = express();
 app.use(cors());
 app.use(express.json());
+function adminAuth(req,res,next){
+  const auth = req.headers.authorization;
+  if(!auth) return res.sendStatus(401);
+  const [user,pass] = Buffer.from(auth.split(" ")[1],'base64').toString().split(":");
+  if(user===ADMIN_USER && pass===ADMIN_PASS) next();
+  else res.sendStatus(403);
+}
 
 mongoose.connect(process.env.MONGO_URL);
 
@@ -55,5 +65,12 @@ app.get("/employers", async(req,res)=>{
 app.get("/", (req,res)=>{
   res.send("PeopleGrid API is running");
 });
+app.get("/admin/workers", adminAuth, async(req,res)=>{
+  res.json(await Worker.find());
+});
 
+app.get("/admin/employers", adminAuth, async(req,res)=>{
+  res.json(await Employer.find());
+});
 app.listen(process.env.PORT || 5000);
+
