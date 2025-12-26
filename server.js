@@ -1,16 +1,18 @@
 const ADMIN_USER = "admin";
 const ADMIN_PASS = "peoplegrid123";
 
-const path = require("path");
-app.use("/uploads", express.static("uploads"));
+
+
 
 
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const multer = require("multer");
-
+const path = require("path");
 const app = express();
+
+
 app.use(cors());
 app.use(express.json());
 function adminAuth(req,res,next){
@@ -20,6 +22,7 @@ function adminAuth(req,res,next){
   if(user===ADMIN_USER && pass===ADMIN_PASS) next();
   else res.sendStatus(403);
 }
+app.use("/uploads", express.static("uploads"));
 
 mongoose.connect(process.env.MONGO_URL);
 
@@ -81,5 +84,6 @@ app.get("/admin/resume/:file", adminAuth, (req,res)=>{
 });
 
 app.listen(process.env.PORT || 5000);
+
 
 
