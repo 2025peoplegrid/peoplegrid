@@ -4,7 +4,7 @@ const cors = require("cors");
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const cloudinary = require("cloudinary").v2;
-require("dotenv").config();
+// require("dotenv").config();
 
 const app = express();
 app.use(cors());
@@ -99,3 +99,4 @@ app.get("/", (req,res)=>{
 });
 
 app.listen(process.env.PORT || 5000);
+
