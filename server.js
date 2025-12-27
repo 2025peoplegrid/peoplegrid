@@ -22,7 +22,7 @@ function adminAuth(req,res,next){
 }
 
 // MongoDB
-mongoose.connect(process.env.MONGO_URL);
+mongoose.connect(process.env.mongodb+srv:peoplegrid:peoplegrid2025@cluster0.5zdi8id.mongodb.net/?appName=Cluster0);
 
 // Cloudinary
 cloudinary.config({
@@ -117,3 +117,4 @@ app.get("/admin/resume/:id", adminAuth, async (req,res)=>{
 
 // Server
 app.listen(process.env.PORT || 5000);
+
