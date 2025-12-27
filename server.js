@@ -10,6 +10,13 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
+const cloudinary = require("cloudinary").v2;
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
 const app = express();
 
 
@@ -22,7 +29,7 @@ function adminAuth(req,res,next){
   if(user===ADMIN_USER && pass===ADMIN_PASS) next();
   else res.sendStatus(403);
 }
-app.use("/uploads", express.static("uploads"));
+// app.use("/uploads", express.static("uploads"));
 
 mongoose.connect(process.env.MONGO_URL);
 
@@ -47,13 +54,21 @@ const Employer = mongoose.model("Employer", {
   workers: Number
 });
 
-const upload = multer({ dest: "uploads/" });
-
 app.post("/worker", upload.single("resume"), async (req,res)=>{
-  const w = new Worker({...req.body, resume:req.file.filename});
+  const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+    resource_type: "raw",
+    folder: "peoplegrid_resumes"
+  });
+
+  const w = new Worker({
+    ...req.body,
+    resume: uploadResult.secure_url
+  });
+
   await w.save();
   res.send("Worker registered");
 });
+
 
 app.post("/employer", async (req,res)=>{
   const e = new Employer(req.body);
@@ -79,13 +94,14 @@ app.get("/admin/workers", adminAuth, async(req,res)=>{
 app.get("/admin/employers", adminAuth, async(req,res)=>{
   res.json(await Employer.find());
 });
-app.get("/admin/resume/:file", adminAuth, (req,res)=>{
-  const filePath = path.join(__dirname, "uploads", req.params.file);
-  res.download(filePath);
-});
+// app.get("/admin/resume/:file", adminAuth, (req,res)=>{
+//   const filePath = path.join(__dirname, "uploads", req.params.file);
+//   res.download(filePath);
+// });
 
 
 app.listen(process.env.PORT || 5000);
+
 
 
 
